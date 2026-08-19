@@ -1,4 +1,7 @@
-import { Box, Button, TextField, Typography, Paper, Alert, InputAdornment, Divider } from "@mui/material";
+import { Box, Button, TextField, Typography, Paper, Alert, InputAdornment, Divider,  IconButton, } from "@mui/material";
+
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,12 +11,14 @@ import MosqueIcon from "@mui/icons-material/Mosque";
 import { login } from "../../api/auth.api";
 import { saveTokens, saveUser } from "../../utils/token";
 
+
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -76,23 +81,42 @@ function Login() {
                 },
               }}
             />
-            <TextField
-              fullWidth
-              label="Mot de passe"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              margin="normal"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LockOutlinedIcon color="action" />
-                    </InputAdornment>
-                  ),
-                },
-              }}
-            />
+                      <TextField
+            fullWidth
+            label="Mot de passe"
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            margin="normal"
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockOutlinedIcon color="action" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      edge="end"
+                      aria-label={
+                        showPassword
+                          ? "Masquer le mot de passe"
+                          : "Afficher le mot de passe"
+                      }
+                    >
+                      {showPassword ? (
+                        <VisibilityOffIcon />
+                      ) : (
+                        <VisibilityIcon />
+                      )}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }}
+/>
             <Button fullWidth variant="contained" type="submit" disabled={loading} sx={{ mt: 2.5, height: 46 }}>
               {loading ? "Connexion..." : "Se connecter"}
             </Button>

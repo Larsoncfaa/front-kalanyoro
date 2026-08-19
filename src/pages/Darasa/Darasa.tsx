@@ -409,8 +409,7 @@ function Darasa() {
                     lineHeight: 1.6,
                   }}
                 >
-                  Enregistrer une séance d'apprentissage directement à
-                  partir du curriculum.
+                  Séance de Dars
                 </Typography>
               </Box>
             </Box>
