@@ -196,7 +196,7 @@ function MainLayout() {
                 color: "#b6f7ea",
               }}
             >
-              LMS & management
+               Gestion
             </Typography>
           </Box>
 
