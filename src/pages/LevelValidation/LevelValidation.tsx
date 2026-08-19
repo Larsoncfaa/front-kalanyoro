@@ -42,7 +42,6 @@ import type {
   LevelValidationStatus,
 } from "../../api/levelValidation.api";
 
-
 interface ValidationForm {
   student: number | "";
   level: number | "";
@@ -55,7 +54,6 @@ interface ValidationForm {
 
   notes: string;
 }
-
 
 const EMPTY_FORM: ValidationForm = {
   student: "",
@@ -70,9 +68,7 @@ const EMPTY_FORM: ValidationForm = {
   notes: "",
 };
 
-
 function LevelValidation() {
-
   const {
     validations,
     loading,
@@ -82,7 +78,6 @@ function LevelValidation() {
     deleteValidation,
   } = useLevelValidations();
 
-
   const { students } = useStudents("", 200);
 
   const {
@@ -90,7 +85,6 @@ function LevelValidation() {
     loading: curriculumLoading,
     error: curriculumError,
   } = useCurriculum();
-
 
   const [open, setOpen] = useState(false);
 
@@ -103,9 +97,7 @@ function LevelValidation() {
   const [formError, setFormError] =
     useState<string | null>(null);
 
-  const [saving, setSaving] =
-    useState(false);
-
+  const [saving, setSaving] = useState(false);
 
   const statusColor: Record<
     string,
@@ -116,30 +108,30 @@ function LevelValidation() {
     FAILED: "error",
   };
 
-
   const statusLabel: Record<string, string> = {
     PENDING: "En attente",
     PASSED: "Validé",
     FAILED: "Échoué",
   };
 
+  // =========================================================
+  // CRÉATION
+  // =========================================================
 
   const openCreate = () => {
-
     setEditing(null);
-
-    setForm(EMPTY_FORM);
-
+    setForm({ ...EMPTY_FORM });
     setFormError(null);
-
     setOpen(true);
   };
 
+  // =========================================================
+  // MODIFICATION
+  // =========================================================
 
   const openEdit = (
     validation: LevelValidationRecord
   ) => {
-
     setEditing(validation);
 
     setForm({
@@ -162,57 +154,47 @@ function LevelValidation() {
     });
 
     setFormError(null);
-
     setOpen(true);
   };
 
+  // =========================================================
+  // FERMETURE
+  // =========================================================
 
   const closeDialog = () => {
-
     if (saving) return;
 
     setOpen(false);
-
     setEditing(null);
-
-    setForm(EMPTY_FORM);
-
+    setForm({ ...EMPTY_FORM });
     setFormError(null);
   };
 
+  // =========================================================
+  // ENREGISTREMENT
+  // =========================================================
 
   const handleSubmit = async () => {
-
     setFormError(null);
 
-
     if (!form.student) {
-
       setFormError(
         "Veuillez sélectionner un élève."
       );
-
       return;
     }
 
-
     if (!form.level) {
-
       setFormError(
         "Veuillez sélectionner un niveau."
       );
-
       return;
     }
 
-
     try {
-
       setSaving(true);
 
-
       const payload: LevelValidationPayload = {
-
         student: Number(form.student),
 
         level: Number(form.level),
@@ -238,148 +220,186 @@ function LevelValidation() {
           form.notes.trim() || null,
       };
 
-
       if (editing) {
-
         await updateValidation(
           editing.id,
           payload
         );
-
       } else {
-
         await createValidation(payload);
       }
 
-
       closeDialog();
-
     } catch (err) {
+      console.error(
+        "Erreur lors de l'enregistrement :",
+        err
+      );
 
-      console.error(err);
-
+      setFormError(
+        "Une erreur est survenue lors de l'enregistrement."
+      );
     } finally {
-
       setSaving(false);
     }
   };
 
+  // =========================================================
+  // SUPPRESSION
+  // =========================================================
 
   const handleDelete = async (
     validation: LevelValidationRecord
   ) => {
-
     const confirmed = window.confirm(
       `Voulez-vous vraiment supprimer la validation de ${validation.student_name} ?`
     );
 
-
     if (!confirmed) return;
 
-
     try {
-
-      await deleteValidation(
-        validation.id
-      );
-
+      await deleteValidation(validation.id);
     } catch (err) {
-
-      console.error(err);
+      console.error(
+        "Erreur lors de la suppression :",
+        err
+      );
     }
   };
 
+  // =========================================================
+  // RENDER
+  // =========================================================
 
   return (
-    <Box>
-
-      {/* =============================== */}
-      {/* HEADER */}
-      {/* =============================== */}
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: "100%",
+        overflow: "hidden",
+      }}
+    >
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
       <Box
         sx={{
-          mb: 3,
+          mb: { xs: 2.5, sm: 3 },
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: {
+            xs: "stretch",
+            sm: "center",
+          },
           gap: 2,
         }}
       >
-
-        <Box>
-
+        <Box
+          sx={{
+            minWidth: 0,
+          }}
+        >
           <Typography
             variant="h4"
-            sx={{ fontWeight: 800 }}
+            sx={{
+              fontWeight: 800,
+              fontSize: {
+                xs: "1.7rem",
+                sm: "2rem",
+                md: "2.125rem",
+              },
+              lineHeight: 1.2,
+            }}
           >
             Validation des niveaux
           </Typography>
 
           <Typography
             color="text.secondary"
-            sx={{ mt: 0.5 }}
+            sx={{
+              mt: 0.75,
+              fontSize: {
+                xs: "0.9rem",
+                sm: "1rem",
+              },
+            }}
           >
-            Valider les passages de niveau des élèves.
+            Valider les passages de niveau
+            des élèves.
           </Typography>
-
         </Box>
-
 
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={openCreate}
+          sx={{
+            width: {
+              xs: "100%",
+              sm: "auto",
+            },
+            minHeight: 44,
+            borderRadius: 2.5,
+            textTransform: "none",
+            fontWeight: 700,
+            whiteSpace: "nowrap",
+          }}
         >
           Nouvelle validation
         </Button>
-
       </Box>
 
-
-      {/* =============================== */}
-      {/* ERREURS */}
-      {/* =============================== */}
+      {/* =====================================================
+          ERREURS
+      ===================================================== */}
 
       {error && (
-
         <Alert
           severity="error"
-          sx={{ mb: 2 }}
+          sx={{
+            mb: 2,
+            borderRadius: 2,
+          }}
         >
           {error}
         </Alert>
-
       )}
 
-
       {curriculumError && (
-
         <Alert
           severity="error"
-          sx={{ mb: 2 }}
+          sx={{
+            mb: 2,
+            borderRadius: 2,
+          }}
         >
           {curriculumError}
         </Alert>
-
       )}
 
-
-      {/* =============================== */}
-      {/* TABLE */}
-      {/* =============================== */}
+      {/* =====================================================
+          TABLE
+      ===================================================== */}
 
       <Paper
         elevation={0}
         sx={{
-          p: 3,
-          borderRadius: 4,
+          p: {
+            xs: 1.5,
+            sm: 2,
+            md: 3,
+          },
+          borderRadius: {
+            xs: 2.5,
+            sm: 4,
+          },
           border: "1px solid #e2e8f0",
+          overflow: "hidden",
         }}
       >
-
         {loading ? (
-
           <Box
             sx={{
               display: "flex",
@@ -389,17 +409,21 @@ function LevelValidation() {
           >
             <CircularProgress />
           </Box>
-
         ) : (
-
-          <Box sx={{ overflowX: "auto" }}>
-
-            <Table sx={{ minWidth: 1000 }}>
-
+          <Box
+            sx={{
+              width: "100%",
+              overflowX: "auto",
+              WebkitOverflowScrolling: "touch",
+            }}
+          >
+            <Table
+              sx={{
+                minWidth: 1000,
+              }}
+            >
               <TableHead>
-
                 <TableRow>
-
                   <TableCell>
                     Élève
                   </TableCell>
@@ -435,127 +459,122 @@ function LevelValidation() {
                   <TableCell align="right">
                     Actions
                   </TableCell>
-
                 </TableRow>
-
               </TableHead>
 
-
               <TableBody>
-
                 {validations.length === 0 ? (
-
                   <TableRow>
-
                     <TableCell
                       colSpan={9}
                       align="center"
+                      sx={{
+                        py: 5,
+                        color: "text.secondary",
+                      }}
                     >
-                      Aucune validation enregistrée.
+                      Aucune validation
+                      enregistrée.
                     </TableCell>
-
                   </TableRow>
-
                 ) : (
+                  validations.map((entry) => (
+                    <TableRow
+                      key={entry.id}
+                      hover
+                    >
+                      <TableCell>
+                        {entry.student_name || "—"}
+                      </TableCell>
 
-                  validations.map(
-                    (entry) => (
+                      <TableCell>
+                        {entry.level_name || "—"}
+                      </TableCell>
 
-                      <TableRow
-                        key={entry.id}
-                        hover
-                      >
+                      <TableCell>
+                        {entry.practical_score ??
+                          "—"}
+                      </TableCell>
 
-                        <TableCell>
-                          {entry.student_name || "—"}
-                        </TableCell>
+                      <TableCell>
+                        {entry.oral_score ?? "—"}
+                      </TableCell>
 
+                      <TableCell>
+                        {entry.score ?? "—"}
+                      </TableCell>
 
-                        <TableCell>
-                          {entry.level_name || "—"}
-                        </TableCell>
+                      <TableCell>
+                        <Chip
+                          icon={
+                            entry.status ===
+                            "PASSED" ? (
+                              <CheckCircleIcon />
+                            ) : entry.status ===
+                              "FAILED" ? (
+                              <CancelIcon />
+                            ) : (
+                              <PendingActionsIcon />
+                            )
+                          }
+                          label={
+                            statusLabel[
+                              entry.status
+                            ] ||
+                            entry.status
+                          }
+                          color={
+                            statusColor[
+                              entry.status
+                            ] || "default"
+                          }
+                          variant="outlined"
+                          size="small"
+                        />
+                      </TableCell>
 
-
-                        <TableCell>
-                          {entry.practical_score ?? "—"}
-                        </TableCell>
-
-
-                        <TableCell>
-                          {entry.oral_score ?? "—"}
-                        </TableCell>
-
-
-                        <TableCell>
-                          {entry.score ?? "—"}
-                        </TableCell>
-
-
-                        <TableCell>
-
+                      <TableCell>
+                        {entry.can_access_next_level &&
+                        entry.next_level_name ? (
                           <Chip
-                            icon={
-                              entry.status === "PASSED"
-                                ? <CheckCircleIcon />
-                                : entry.status === "FAILED"
-                                  ? <CancelIcon />
-                                  : <PendingActionsIcon />
-                            }
-                            label={
-                              statusLabel[
-                                entry.status
-                              ] || entry.status
-                            }
-                            color={
-                              statusColor[
-                                entry.status
-                              ] || "default"
-                            }
-                            variant="outlined"
+                            size="small"
+                            color="success"
+                            label={`→ ${entry.next_level_name}`}
                           />
+                        ) : (
+                          "—"
+                        )}
+                      </TableCell>
 
-                        </TableCell>
+                      <TableCell
+                        sx={{
+                          maxWidth: 260,
+                          whiteSpace: "normal",
+                          wordBreak: "break-word",
+                        }}
+                      >
+                        {entry.notes || "—"}
+                      </TableCell>
 
-
-                        <TableCell>
-
-                          {entry.can_access_next_level &&
-                          entry.next_level_name ? (
-
-                            <Chip
-                              size="small"
-                              color="success"
-                              label={`→ ${entry.next_level_name}`}
-                            />
-
-                          ) : (
-
-                            "—"
-
-                          )}
-
-                        </TableCell>
-
-
-                        <TableCell>
-
-                          {entry.notes || "—"}
-
-                        </TableCell>
-
-
-                        <TableCell align="right">
-
+                      <TableCell align="right">
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent:
+                              "flex-end",
+                            gap: 0.5,
+                          }}
+                        >
                           <IconButton
                             color="primary"
                             onClick={() =>
                               openEdit(entry)
                             }
                             title="Modifier"
+                            size="small"
                           >
                             <EditIcon />
                           </IconButton>
-
 
                           <IconButton
                             color="error"
@@ -565,162 +584,204 @@ function LevelValidation() {
                               )
                             }
                             title="Supprimer"
+                            size="small"
                           >
                             <DeleteIcon />
                           </IconButton>
-
-                        </TableCell>
-
-                      </TableRow>
-
-                    )
-                  )
-
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
-
               </TableBody>
-
             </Table>
-
           </Box>
-
         )}
-
       </Paper>
 
-
-      {/* =============================== */}
-      {/* DIALOG CRUD */}
-      {/* =============================== */}
+      {/* =====================================================
+          DIALOG CRUD
+      ===================================================== */}
 
       <Dialog
         open={open}
         onClose={closeDialog}
         fullWidth
         maxWidth="sm"
+        sx={{
+          "& .MuiDialog-container": {
+            alignItems: {
+              xs: "flex-end",
+              sm: "center",
+            },
+          },
+          "& .MuiDialog-paper": {
+            width: "100%",
+            maxWidth: 600,
+            margin: {
+              xs: 0,
+              sm: 2,
+            },
+            borderRadius: {
+              xs: "18px 18px 0 0",
+              sm: 3,
+            },
+            maxHeight: {
+              xs: "92vh",
+              sm: "90vh",
+            },
+          },
+        }}
       >
-
-        <DialogTitle>
-
+        <DialogTitle
+          sx={{
+            fontWeight: 800,
+            pb: 1,
+          }}
+        >
           {editing
             ? "Modifier la validation"
             : "Nouvelle validation"}
-
         </DialogTitle>
 
-
-        <DialogContent>
-
+        <DialogContent
+          dividers
+          sx={{
+            px: {
+              xs: 2,
+              sm: 3,
+            },
+          }}
+        >
           {formError && (
-
             <Alert
               severity="error"
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2,
+                borderRadius: 2,
+              }}
             >
               {formError}
             </Alert>
-
           )}
-
 
           <Box
             sx={{
               display: "grid",
+              gridTemplateColumns: {
+                xs: "1fr",
+                sm: "1fr 1fr",
+              },
               gap: 2,
               mt: 1,
             }}
           >
+            {/* =================================================
+                ÉLÈVE
+            ================================================= */}
 
-            {/* ÉLÈVE */}
-
-            <FormControl fullWidth>
-
+            <FormControl
+              fullWidth
+              sx={{
+                gridColumn: {
+                  xs: "auto",
+                  sm: "1 / -1",
+                },
+              }}
+            >
               <InputLabel>
                 Élève
               </InputLabel>
 
-              <Select
+              <Select<number | "">
                 value={form.student}
                 label="Élève"
-                onChange={(event) =>
+                onChange={(event) => {
+                  const value =
+                    event.target.value;
+
                   setForm((prev) => ({
                     ...prev,
-                    student: Number(
-                      event.target.value
-                    ),
-                  }))
-                }
+                    student:
+                      value === ""
+                        ? ""
+                        : Number(value),
+                  }));
+                }}
               >
-
                 <MenuItem value="">
                   Sélectionner un élève
                 </MenuItem>
 
                 {students.map(
                   (student: any) => (
-
                     <MenuItem
                       key={student.id}
                       value={student.id}
                     >
                       {student.full_name}
                     </MenuItem>
-
                   )
                 )}
-
               </Select>
-
             </FormControl>
 
+            {/* =================================================
+                NIVEAU
+            ================================================= */}
 
-            {/* NIVEAU */}
-
-            <FormControl fullWidth>
-
+            <FormControl
+              fullWidth
+              sx={{
+                gridColumn: {
+                  xs: "auto",
+                  sm: "1 / -1",
+                },
+              }}
+            >
               <InputLabel>
                 Niveau
               </InputLabel>
 
-              <Select
+              <Select<number | "">
                 value={form.level}
                 label="Niveau"
-                disabled={curriculumLoading}
-                onChange={(event) =>
+                disabled={
+                  curriculumLoading
+                }
+                onChange={(event) => {
+                  const value =
+                    event.target.value;
+
                   setForm((prev) => ({
                     ...prev,
-                    level: Number(
-                      event.target.value
-                    ),
-                  }))
-                }
+                    level:
+                      value === ""
+                        ? ""
+                        : Number(value),
+                  }));
+                }}
               >
-
                 <MenuItem value="">
                   Sélectionner un niveau
                 </MenuItem>
 
-                {(levels as any[] | undefined)?.map(
-                  (level) => (
-
-                    <MenuItem
-                      key={level.id}
-                      value={level.id}
-                    >
-                      Niveau{" "}
-                      {level.level_number} —{" "}
-                      {level.name}
-                    </MenuItem>
-
-                  )
-                )}
-
+                {levels?.map((level) => (
+                  <MenuItem
+                    key={level.id}
+                    value={level.id}
+                  >
+                    Niveau{" "}
+                    {level.level_number} —{" "}
+                    {level.name}
+                  </MenuItem>
+                ))}
               </Select>
-
             </FormControl>
 
-
-            {/* NOTE PRATIQUE */}
+            {/* =================================================
+                NOTE PRATIQUE
+            ================================================= */}
 
             <TextField
               label="Note pratique"
@@ -738,11 +799,13 @@ function LevelValidation() {
                         ),
                 }))
               }
-             
+            
+            
             />
 
-
-            {/* NOTE ORALE */}
+            {/* =================================================
+                NOTE ORALE
+            ================================================= */}
 
             <TextField
               label="Note orale"
@@ -760,11 +823,12 @@ function LevelValidation() {
                         ),
                 }))
               }
-             
+        
             />
 
-
-            {/* SCORE */}
+            {/* =================================================
+                SCORE
+            ================================================= */}
 
             <TextField
               label="Score"
@@ -782,14 +846,22 @@ function LevelValidation() {
                         ),
                 }))
               }
-             
+
             />
 
+            {/* =================================================
+                STATUT
+            ================================================= */}
 
-            {/* STATUT */}
-
-            <FormControl fullWidth>
-
+            <FormControl
+              fullWidth
+              sx={{
+                gridColumn: {
+                  xs: "auto",
+                  sm: "1 / -1",
+                },
+              }}
+            >
               <InputLabel>
                 Statut
               </InputLabel>
@@ -805,7 +877,6 @@ function LevelValidation() {
                   }))
                 }
               >
-
                 <MenuItem value="PENDING">
                   En attente
                 </MenuItem>
@@ -817,13 +888,12 @@ function LevelValidation() {
                 <MenuItem value="FAILED">
                   Échoué
                 </MenuItem>
-
               </Select>
-
             </FormControl>
 
-
-            {/* NOTES */}
+            {/* =================================================
+                NOTES
+            ================================================= */}
 
             <TextField
               label="Notes"
@@ -837,22 +907,47 @@ function LevelValidation() {
                   notes: event.target.value,
                 }))
               }
+              sx={{
+                gridColumn: {
+                  xs: "auto",
+                  sm: "1 / -1",
+                },
+              }}
             />
-
           </Box>
-
         </DialogContent>
 
-
-        <DialogActions>
-
+        <DialogActions
+          sx={{
+            px: {
+              xs: 2,
+              sm: 3,
+            },
+            py: 2,
+            gap: 1,
+            flexDirection: {
+              xs: "column-reverse",
+              sm: "row",
+            },
+            alignItems: {
+              xs: "stretch",
+              sm: "center",
+            },
+          }}
+        >
           <Button
             onClick={closeDialog}
             disabled={saving}
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              textTransform: "none",
+            }}
           >
             Annuler
           </Button>
-
 
           <Button
             variant="contained"
@@ -860,23 +955,25 @@ function LevelValidation() {
               void handleSubmit()
             }
             disabled={saving}
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              textTransform: "none",
+              fontWeight: 700,
+            }}
           >
-
             {saving
               ? "Enregistrement..."
               : editing
                 ? "Modifier"
                 : "Enregistrer"}
-
           </Button>
-
         </DialogActions>
-
       </Dialog>
-
     </Box>
   );
 }
-
 
 export default LevelValidation;

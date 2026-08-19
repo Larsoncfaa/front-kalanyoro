@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 
 import {
@@ -36,16 +35,8 @@ import {
   deleteCurriculumLevel,
 } from "../../api/curriculum.api";
 
-
-
-
 function Curriculum() {
-  const {
-    levels,
-    loading,
-    error,
-    reload,
-  } = useCurriculum();
+  const { levels, loading, error, reload } = useCurriculum();
 
   // =========================================================
   // ÉTAT DU FORMULAIRE
@@ -123,10 +114,7 @@ function Curriculum() {
       };
 
       if (editingLevel) {
-        await updateCurriculumLevel(
-          editingLevel.id,
-          payload
-        );
+        await updateCurriculumLevel(editingLevel.id, payload);
       } else {
         await createCurriculumLevel(payload);
       }
@@ -177,8 +165,10 @@ function Curriculum() {
     return (
       <Box
         sx={{
+          minHeight: 300,
           display: "flex",
           justifyContent: "center",
+          alignItems: "center",
           py: 8,
         }}
       >
@@ -193,7 +183,7 @@ function Curriculum() {
 
   if (error) {
     return (
-      <Alert severity="error">
+      <Alert severity="error" sx={{ borderRadius: 3 }}>
         {error}
       </Alert>
     );
@@ -204,33 +194,52 @@ function Curriculum() {
   // =========================================================
 
   return (
-    <Box>
-
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: "100%",
+        overflow: "hidden",
+      }}
+    >
       {/* =====================================================
           HEADER
       ===================================================== */}
 
       <Box
         sx={{
-          mb: 4,
+          mb: { xs: 3, sm: 4 },
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: { xs: "stretch", sm: "center" },
           gap: 2,
-          flexWrap: "wrap",
         }}
       >
-        <Box>
+        <Box sx={{ minWidth: 0 }}>
           <Typography
             variant="h4"
-            sx={{ fontWeight: 800 }}
+            sx={{
+              fontWeight: 800,
+              fontSize: {
+                xs: "1.65rem",
+                sm: "2rem",
+                md: "2.2rem",
+              },
+              lineHeight: 1.2,
+              wordBreak: "break-word",
+            }}
           >
             Parcours curriculum islamique
           </Typography>
 
           <Typography
             color="text.secondary"
-            sx={{ mt: 1 }}
+            sx={{
+              mt: 1,
+              fontSize: { xs: "0.9rem", sm: "1rem" },
+              lineHeight: 1.6,
+              maxWidth: 850,
+            }}
           >
             Progression par maîtrise, micro-compétences et
             validation pratique à chaque niveau.
@@ -241,6 +250,16 @@ function Curriculum() {
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleOpenCreate}
+          sx={{
+            alignSelf: {
+              xs: "stretch",
+              sm: "center",
+            },
+            minHeight: 44,
+            borderRadius: 2.5,
+            px: 2.5,
+            whiteSpace: "nowrap",
+          }}
         >
           Ajouter un niveau
         </Button>
@@ -254,21 +273,20 @@ function Curriculum() {
         sx={{
           display: "flex",
           flexDirection: "column",
-          gap: 3,
+          gap: { xs: 2, sm: 3 },
         }}
       >
         {levels.map((level) => (
-
           <Paper
             key={level.id}
             elevation={0}
             sx={{
-              p: 3,
-              borderRadius: 4,
+              p: { xs: 2, sm: 3 },
+              borderRadius: { xs: 3, sm: 4 },
               border: "1px solid #e2e8f0",
+              overflow: "hidden",
             }}
           >
-
             {/* =================================================
                 HEADER NIVEAU
             ================================================= */}
@@ -276,25 +294,40 @@ function Curriculum() {
             <Box
               sx={{
                 display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
                 justifyContent: "space-between",
-                alignItems: "center",
-                mb: 2,
-                flexWrap: "wrap",
+                alignItems: {
+                  xs: "stretch",
+                  sm: "center",
+                },
                 gap: 2,
+                mb: 2,
               }}
             >
-
-              <Box>
+              <Box
+                sx={{
+                  minWidth: 0,
+                  flex: 1,
+                }}
+              >
                 <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
+                    flexWrap: "wrap",
                     gap: 1,
                   }}
                 >
                   <Typography
                     variant="h6"
-                    sx={{ fontWeight: 700 }}
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: {
+                        xs: "1.05rem",
+                        sm: "1.25rem",
+                      },
+                      wordBreak: "break-word",
+                    }}
                   >
                     {level.name}
                   </Typography>
@@ -311,7 +344,11 @@ function Curriculum() {
                 <Typography
                   variant="body2"
                   color="text.secondary"
-                  sx={{ mt: 0.5 }}
+                  sx={{
+                    mt: 0.5,
+                    lineHeight: 1.6,
+                    wordBreak: "break-word",
+                  }}
                 >
                   {level.description}
                 </Typography>
@@ -320,21 +357,32 @@ function Curriculum() {
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
+                  flexDirection: "row",
+                  alignItems: {
+                    xs: "center",
+                    sm: "center",
+                  },
+                  justifyContent: {
+                    xs: "space-between",
+                    sm: "flex-end",
+                  },
                   gap: 1,
+                  flexWrap: "wrap",
+                  flexShrink: 0,
                 }}
               >
-
                 <Chip
                   icon={<SchoolIcon />}
                   label={`Niveau ${level.level_number}`}
                   color="success"
+                  size="small"
                 />
 
                 <IconButton
                   color="primary"
                   onClick={() => handleOpenEdit(level)}
                   title="Modifier"
+                  size="small"
                 >
                   <EditIcon />
                 </IconButton>
@@ -343,15 +391,14 @@ function Curriculum() {
                   color="error"
                   onClick={() => handleDelete(level)}
                   title="Supprimer"
+                  size="small"
                 >
                   <DeleteIcon />
                 </IconButton>
-
               </Box>
-
             </Box>
 
-            <Divider sx={{ mb: 2 }} />
+            <Divider sx={{ mb: { xs: 2, sm: 2.5 } }} />
 
             {/* =================================================
                 MODULES
@@ -361,37 +408,48 @@ function Curriculum() {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 2,
+                gap: { xs: 1.5, sm: 2 },
               }}
             >
-
               {level.modules?.map((module) => (
-
                 <Paper
                   key={module.id}
                   variant="outlined"
                   sx={{
-                    p: 2.5,
-                    borderRadius: 3,
+                    p: { xs: 1.5, sm: 2.5 },
+                    borderRadius: { xs: 2.5, sm: 3 },
+                    overflow: "hidden",
                   }}
                 >
-
                   {/* MODULE HEADER */}
 
                   <Box
                     sx={{
                       display: "flex",
+                      flexDirection: {
+                        xs: "column",
+                        sm: "row",
+                      },
                       justifyContent: "space-between",
-                      alignItems: "center",
+                      alignItems: {
+                        xs: "stretch",
+                        sm: "center",
+                      },
+                      gap: 1.5,
                       mb: 1.5,
-                      flexWrap: "wrap",
-                      gap: 1,
                     }}
                   >
-
-                    <Box>
+                    <Box
+                      sx={{
+                        minWidth: 0,
+                        flex: 1,
+                      }}
+                    >
                       <Typography
-                        sx={{ fontWeight: 700 }}
+                        sx={{
+                          fontWeight: 700,
+                          wordBreak: "break-word",
+                        }}
                       >
                         {module.title}
                       </Typography>
@@ -399,6 +457,11 @@ function Curriculum() {
                       <Typography
                         variant="body2"
                         color="text.secondary"
+                        sx={{
+                          mt: 0.25,
+                          lineHeight: 1.5,
+                          wordBreak: "break-word",
+                        }}
                       >
                         {module.description}
                       </Typography>
@@ -408,10 +471,12 @@ function Curriculum() {
                       sx={{
                         display: "flex",
                         flexDirection: "row",
+                        alignItems: "center",
                         gap: 1,
+                        flexWrap: "wrap",
+                        flexShrink: 0,
                       }}
                     >
-
                       <Chip
                         icon={<MenuBookIcon />}
                         label={`${module.duration_minutes} min`}
@@ -425,9 +490,7 @@ function Curriculum() {
                           size="small"
                         />
                       )}
-
                     </Box>
-
                   </Box>
 
                   {/* =================================================
@@ -435,29 +498,42 @@ function Curriculum() {
                   ================================================= */}
 
                   {module.lessons?.map((lesson) => (
-
                     <Box
                       key={lesson.id}
                       sx={{
                         mt: 2,
-                        p: 2,
+                        p: { xs: 1.5, sm: 2 },
                         borderRadius: 2,
                         bgcolor: "#f8fafc",
+                        overflow: "hidden",
                       }}
                     >
-
                       <Box
                         sx={{
                           display: "flex",
+                          flexDirection: {
+                            xs: "column",
+                            sm: "row",
+                          },
                           justifyContent: "space-between",
-                          alignItems: "flex-start",
-                          gap: 2,
+                          alignItems: {
+                            xs: "stretch",
+                            sm: "flex-start",
+                          },
+                          gap: 1.5,
                         }}
                       >
-
-                        <Box>
+                        <Box
+                          sx={{
+                            minWidth: 0,
+                            flex: 1,
+                          }}
+                        >
                           <Typography
-                            sx={{ fontWeight: 600 }}
+                            sx={{
+                              fontWeight: 600,
+                              wordBreak: "break-word",
+                            }}
                           >
                             {lesson.title}
                           </Typography>
@@ -466,7 +542,11 @@ function Curriculum() {
                             <Typography
                               variant="body2"
                               color="text.secondary"
-                              sx={{ mt: 0.5 }}
+                              sx={{
+                                mt: 0.5,
+                                lineHeight: 1.5,
+                                wordBreak: "break-word",
+                              }}
                             >
                               {lesson.description}
                             </Typography>
@@ -476,8 +556,14 @@ function Curriculum() {
                         <Chip
                           label={`${lesson.duration_minutes} min`}
                           size="small"
+                          sx={{
+                            alignSelf: {
+                              xs: "flex-start",
+                              sm: "flex-start",
+                            },
+                            flexShrink: 0,
+                          }}
                         />
-
                       </Box>
 
                       {/* =================================================
@@ -492,31 +578,49 @@ function Curriculum() {
                           mt: 2,
                         }}
                       >
-
                         {lesson.competencies?.map(
                           (competency) => (
-
                             <Box
                               key={competency.id}
                               sx={{
                                 display: "flex",
+                                flexDirection: {
+                                  xs: "column",
+                                  sm: "row",
+                                },
                                 justifyContent:
                                   "space-between",
-                                alignItems: "center",
-                                px: 1.5,
+                                alignItems: {
+                                  xs: "stretch",
+                                  sm: "center",
+                                },
+                                gap: 1.5,
+                                px: {
+                                  xs: 1.25,
+                                  sm: 1.5,
+                                },
                                 py: 1,
                                 borderRadius: 2,
                                 bgcolor:
                                   competency.is_gate
                                     ? "#fef3c7"
                                     : "#ffffff",
+                                border:
+                                  "1px solid rgba(226,232,240,0.7)",
                               }}
                             >
-
-                              <Box>
+                              <Box
+                                sx={{
+                                  minWidth: 0,
+                                  flex: 1,
+                                }}
+                              >
                                 <Typography
                                   variant="body1"
-                                  sx={{ fontWeight: 600 }}
+                                  sx={{
+                                    fontWeight: 600,
+                                    wordBreak: "break-word",
+                                  }}
                                 >
                                   {competency.title}
                                 </Typography>
@@ -524,6 +628,10 @@ function Curriculum() {
                                 <Typography
                                   variant="body2"
                                   color="text.secondary"
+                                  sx={{
+                                    lineHeight: 1.5,
+                                    wordBreak: "break-word",
+                                  }}
                                 >
                                   {competency.description}
                                 </Typography>
@@ -535,9 +643,14 @@ function Curriculum() {
                                   flexDirection: "row",
                                   alignItems: "center",
                                   gap: 1,
+                                  flexWrap: "wrap",
+                                  flexShrink: 0,
+                                  alignSelf: {
+                                    xs: "flex-start",
+                                    sm: "center",
+                                  },
                                 }}
                               >
-
                                 {competency.is_gate && (
                                   <Chip
                                     label="Gate"
@@ -546,31 +659,22 @@ function Curriculum() {
                                   />
                                 )}
 
-                                <CheckCircleIcon color="success" />
-
+                                <CheckCircleIcon
+                                  color="success"
+                                  fontSize="small"
+                                />
                               </Box>
-
                             </Box>
-
                           )
                         )}
-
                       </Box>
-
                     </Box>
-
                   ))}
-
                 </Paper>
-
               ))}
-
             </Box>
-
           </Paper>
-
         ))}
-
       </Box>
 
       {/* =========================================================
@@ -582,25 +686,50 @@ function Curriculum() {
         onClose={handleCloseDialog}
         fullWidth
         maxWidth="sm"
+        sx={{
+          "& .MuiDialog-paper": {
+            borderRadius: {
+              xs: 2,
+              sm: 4,
+            },
+            mx: {
+              xs: 1,
+              sm: 2,
+            },
+            width: {
+              xs: "calc(100% - 16px)",
+              sm: "100%",
+            },
+            maxHeight: {
+              xs: "calc(100% - 32px)",
+              sm: "calc(100% - 64px)",
+            },
+          },
+        }}
       >
-
-        <DialogTitle>
+        <DialogTitle
+          sx={{
+            fontWeight: 700,
+            fontSize: {
+              xs: "1.1rem",
+              sm: "1.25rem",
+            },
+          }}
+        >
           {editingLevel
             ? "Modifier le niveau"
             : "Ajouter un niveau"}
         </DialogTitle>
 
         <DialogContent>
-
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
-              gap: 2.5,
+              gap: { xs: 2, sm: 2.5 },
               pt: 1,
             }}
           >
-
             <TextField
               label="Numéro du niveau"
               type="number"
@@ -644,13 +773,17 @@ function Curriculum() {
               }
               label="Niveau actif"
             />
-
           </Box>
-
         </DialogContent>
 
-        <DialogActions>
-
+        <DialogActions
+          sx={{
+            px: { xs: 2, sm: 3 },
+            pb: { xs: 2, sm: 2 },
+            gap: 1,
+            flexWrap: "wrap",
+          }}
+        >
           <Button
             onClick={handleCloseDialog}
             disabled={saving}
@@ -673,14 +806,10 @@ function Curriculum() {
                 ? "Modifier"
                 : "Créer"}
           </Button>
-
         </DialogActions>
-
       </Dialog>
-
     </Box>
   );
 }
 
 export default Curriculum;
-

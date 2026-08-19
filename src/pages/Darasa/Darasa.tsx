@@ -1,6 +1,4 @@
-
 import { useMemo, useState } from "react";
-
 
 import {
   Box,
@@ -23,6 +21,12 @@ import {
   Divider,
   Chip,
 } from "@mui/material";
+
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import SaveIcon from "@mui/icons-material/Save";
+import SearchIcon from "@mui/icons-material/Search";
 
 import { useForm, Controller } from "react-hook-form";
 
@@ -63,7 +67,6 @@ interface CurriculumLevel {
   modules: CurriculumModule[];
 }
 
-
 interface DarasaForm {
   student: string;
   session_type: SessionType;
@@ -83,7 +86,6 @@ interface DarasaForm {
   notes: string;
 }
 
-
 const SESSION_TYPES = [
   { value: "QURAN", label: "Coran" },
   { value: "PRAYER", label: "Prière" },
@@ -95,7 +97,6 @@ const SESSION_TYPES = [
   { value: "DUA", label: "Invocations" },
   { value: "ARABIC", label: "Arabe" },
 ];
-
 
 function Darasa() {
   const {
@@ -120,9 +121,7 @@ function Darasa() {
     error: curriculumError,
   } = useCurriculum();
 
-
   const [formError, setFormError] = useState<string | null>(null);
-
 
   const {
     control,
@@ -153,12 +152,10 @@ function Darasa() {
     },
   });
 
-
   const selectedLevelId = watch("level");
   const selectedModuleId = watch("module");
   const selectedLessonId = watch("lesson");
   const selectedSessionType = watch("session_type");
-
 
   const selectedLevel = useMemo(() => {
     return (levels as CurriculumLevel[] | undefined)?.find(
@@ -166,11 +163,9 @@ function Darasa() {
     );
   }, [levels, selectedLevelId]);
 
-
   const modules = useMemo(() => {
     return selectedLevel?.modules ?? [];
   }, [selectedLevel]);
-
 
   const selectedModule = useMemo(() => {
     return modules.find(
@@ -178,11 +173,9 @@ function Darasa() {
     );
   }, [modules, selectedModuleId]);
 
-
   const lessons = useMemo(() => {
     return selectedModule?.lessons ?? [];
   }, [selectedModule]);
-
 
   const selectedLesson = useMemo(() => {
     return lessons.find(
@@ -190,34 +183,26 @@ function Darasa() {
     );
   }, [lessons, selectedLessonId]);
 
-
   const handleLevelChange = (levelId: number) => {
     setValue("level", levelId);
     setValue("module", 0);
     setValue("lesson", 0);
   };
 
-
   const handleModuleChange = (moduleId: number) => {
     setValue("module", moduleId);
     setValue("lesson", 0);
   };
 
-
   const handleSessionTypeChange = (type: SessionType) => {
     setValue("session_type", type);
 
-    /*
-     * Si ce n'est pas une séance Coran,
-     * on peut vider la sélection de sourate.
-     */
     if (type !== "QURAN") {
       setValue("surah", 0);
       setValue("verse_start", 1);
       setValue("verse_end", 1);
     }
   };
-
 
   const onSubmit = async (values: DarasaForm) => {
     setFormError(null);
@@ -243,9 +228,6 @@ function Darasa() {
         return;
       }
 
-      /*
-       * Le type QURAN nécessite une sourate.
-       */
       if (values.session_type === "QURAN" && !values.surah) {
         setFormError("Veuillez sélectionner une sourate.");
         return;
@@ -264,15 +246,14 @@ function Darasa() {
             : null,
 
         verse_start:
-        values.session_type === "QURAN"
-        ? Number(values.verse_start)
-        : null,
+          values.session_type === "QURAN"
+            ? Number(values.verse_start)
+            : null,
 
         verse_end:
-        values.session_type === "QURAN"
-        ? Number(values.verse_end)
-      : null,
-
+          values.session_type === "QURAN"
+            ? Number(values.verse_end)
+            : null,
 
         date: values.date,
         start_time: values.start_time,
@@ -312,7 +293,6 @@ function Darasa() {
     }
   };
 
-
   const tableRows = useMemo(() => {
     return sessions.map((session: any) => ({
       id: session.id,
@@ -343,631 +323,999 @@ function Darasa() {
     }));
   }, [sessions]);
 
+  const sectionTitleSx = {
+    fontWeight: 800,
+    color: "text.primary",
+    letterSpacing: "-0.01em",
+  };
+
+  const paperSx = {
+    borderRadius: { xs: 2.5, sm: 3 },
+    border: "1px solid",
+    borderColor: "divider",
+    boxShadow: "0 8px 30px rgba(15, 23, 42, 0.06)",
+    overflow: "hidden",
+  };
 
   return (
-    <Box>
-      <Typography
-        variant="h4"
-        sx={{
-          mb: 1,
-          fontWeight: 700,
-        }}
-      >
-        📖 Séances de Dars
-      </Typography>
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: 1600,
+        mx: "auto",
+        px: { xs: 1.5, sm: 2, md: 3 },
+        py: { xs: 2, sm: 3, md: 4 },
+      }}
+    >
+      {/* HEADER */}
+      <Box sx={{ mb: { xs: 2.5, sm: 3.5 } }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "space-between",
+            alignItems: { xs: "flex-start", sm: "center" },
+            gap: 2,
+          }}
+        >
+          <Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
+                mb: 0.75,
+              }}
+            >
+              <Box
+                sx={{
+                  width: { xs: 42, sm: 48 },
+                  height: { xs: 42, sm: 48 },
+                  borderRadius: 2.5,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  bgcolor: "primary.main",
+                  color: "primary.contrastText",
+                  boxShadow:
+                    "0 8px 20px rgba(25, 118, 210, 0.2)",
+                  flexShrink: 0,
+                }}
+              >
+                <MenuBookIcon />
+              </Box>
 
-      <Typography
-        color="text.secondary"
-        sx={{ mb: 3 }}
-      >
-        Enregistrer une séance d'apprentissage directement à partir du curriculum.
-      </Typography>
+              <Box>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    ...sectionTitleSx,
+                    fontSize: {
+                      xs: "1.45rem",
+                      sm: "1.75rem",
+                      md: "2rem",
+                    },
+                  }}
+                >
+                  Séances de Dars
+                </Typography>
 
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    mt: 0.25,
+                    maxWidth: 700,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Enregistrer une séance d'apprentissage directement à
+                  partir du curriculum.
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
 
+      {/* CONTENT */}
       <Box
         sx={{
           display: "grid",
-          gap: 3,
-          gridTemplateColumns:
-            "repeat(auto-fit,minmax(350px,1fr))",
+          gap: { xs: 2, md: 3 },
+          gridTemplateColumns: {
+            xs: "1fr",
+            lg: "minmax(360px, 0.85fr) minmax(0, 1.5fr)",
+          },
+          alignItems: "start",
         }}
       >
-
-        {/* ============================= */}
         {/* FORMULAIRE */}
-        {/* ============================= */}
-
-        <Paper
-          sx={{
-            p: 3,
-            borderRadius: 3,
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{
-              mb: 2,
-              fontWeight: 700,
-            }}
-          >
-            Nouvelle séance
-          </Typography>
-
-
-          {formError && (
-            <Alert
-              severity="error"
-              sx={{ mb: 2 }}
-            >
-              {formError}
-            </Alert>
-          )}
-
-
-          {curriculumError && (
-            <Alert
-              severity="error"
-              sx={{ mb: 2 }}
-            >
-              {curriculumError}
-            </Alert>
-          )}
-
-
+        <Paper sx={paperSx}>
           <Box
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
             sx={{
-              display: "grid",
-              gap: 2,
+              px: { xs: 2, sm: 3 },
+              py: { xs: 2, sm: 2.5 },
+              bgcolor: "background.paper",
+              borderBottom: "1px solid",
+              borderColor: "divider",
             }}
           >
-
-            {/* APPRENANT */}
-
-            <Controller
-              name="student"
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({ field }) => (
-                <FormControl fullWidth>
-                  <InputLabel>
-                    Apprenant
-                  </InputLabel>
-
-                  <Select
-                    {...field}
-                    label="Apprenant"
-                    value={field.value || ""}
-                  >
-                    <MenuItem value="">
-                      Sélectionner
-                    </MenuItem>
-
-                    {students.map((student: any) => (
-                      <MenuItem
-                        key={student.id}
-                        value={student.id}
-                      >
-                        {student.full_name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-            />
-
-
-            {/* TYPE DE SÉANCE */}
-
-            <Controller
-              name="session_type"
-              control={control}
-              render={({ field }) => (
-                <FormControl fullWidth>
-                  <InputLabel>
-                    Type de séance
-                  </InputLabel>
-
-                  <Select
-                    {...field}
-                    label="Type de séance"
-                    onChange={(event) => {
-                      handleSessionTypeChange(
-                        event.target.value
-                      );
-                    }}
-                  >
-                    {SESSION_TYPES.map((type) => (
-                      <MenuItem
-                        key={type.value}
-                        value={type.value}
-                      >
-                        {type.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
-            />
-
-
-            <Divider />
-
-
-            {/* CURRICULUM */}
-
-            <Typography
-              variant="subtitle1"
+            <Box
               sx={{
-                fontWeight: 700,
+                display: "flex",
+                alignItems: "center",
+                gap: 1.5,
               }}
             >
-              📚 Curriculum
-            </Typography>
-
-
-            {/* NIVEAU */}
-
-            <FormControl fullWidth>
-              <InputLabel>
-                Niveau
-              </InputLabel>
-
-              <Select
-                value={selectedLevelId || ""}
-                label="Niveau"
-                disabled={curriculumLoading}
-                onChange={(event) => {
-                  handleLevelChange(
-                    Number(event.target.value)
-                  );
-                }}
-              >
-                <MenuItem value="">
-                  Sélectionner un niveau
-                </MenuItem>
-
-                {(levels as CurriculumLevel[] | undefined)?.map(
-                  (level) => (
-                    <MenuItem
-                      key={level.id}
-                      value={level.id}
-                    >
-                      Niveau {level.level_number} —{" "}
-                      {level.name}
-                    </MenuItem>
-                  )
-                )}
-              </Select>
-            </FormControl>
-
-
-            {/* MODULE */}
-
-            <FormControl
-              fullWidth
-              disabled={!selectedLevelId}
-            >
-              <InputLabel>
-                Module
-              </InputLabel>
-
-              <Select
-                value={selectedModuleId || ""}
-                label="Module"
-                onChange={(event) => {
-                  handleModuleChange(
-                    Number(event.target.value)
-                  );
-                }}
-              >
-                <MenuItem value="">
-                  Sélectionner un module
-                </MenuItem>
-
-                {modules.map((module) => (
-                  <MenuItem
-                    key={module.id}
-                    value={module.id}
-                  >
-                    {module.order}. {module.title}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-
-            {/* LEÇON */}
-
-            <FormControl
-              fullWidth
-              disabled={!selectedModuleId}
-            >
-              <InputLabel>
-                Leçon
-              </InputLabel>
-
-              <Select
-                value={selectedLessonId || ""}
-                label="Leçon"
-                onChange={(event) => {
-                  setValue(
-                    "lesson",
-                    Number(event.target.value)
-                  );
-                }}
-              >
-                <MenuItem value="">
-                  Sélectionner une leçon
-                </MenuItem>
-
-                {lessons.map((lesson) => (
-                  <MenuItem
-                    key={lesson.id}
-                    value={lesson.id}
-                  >
-                    {lesson.order}. {lesson.title}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-
-            {/* INFORMATIONS LEÇON */}
-
-            {selectedLesson && (
-              <Paper
-                variant="outlined"
+              <Box
                 sx={{
-                  p: 2,
+                  width: 38,
+                  height: 38,
                   borderRadius: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  bgcolor: "primary.50",
+                  color: "primary.main",
                 }}
               >
+                <SaveIcon fontSize="small" />
+              </Box>
+
+              <Box>
                 <Typography
-                  variant="subtitle2"
-                  sx={{ fontWeight: 700 }}
-                >
-                  {selectedLesson.title}
-                </Typography>
-
-                {selectedLesson.objectives && (
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mt: 1 }}
-                  >
-                    Objectifs :{" "}
-                    {selectedLesson.objectives}
-                  </Typography>
-                )}
-
-                {selectedLesson.duration_minutes && (
-                  <Chip
-                    size="small"
-                    label={`${selectedLesson.duration_minutes} min`}
-                    sx={{ mt: 1 }}
-                  />
-                )}
-              </Paper>
-            )}
-
-
-            {/* ============================= */}
-            {/* CORAN */}
-            {/* ============================= */}
-
-            {selectedSessionType === "QURAN" && (
-              <>
-                <Divider />
-
-                <Typography
-                  variant="subtitle1"
+                  variant="h6"
                   sx={{
-                    fontWeight: 700,
+                    ...sectionTitleSx,
+                    fontSize: { xs: "1rem", sm: "1.1rem" },
                   }}
                 >
-                  📖 Contenu coranique
+                  Nouvelle séance
                 </Typography>
 
-                <QuranSelector
-                  verseStart={watch("verse_start")}
-                  verseEnd={watch("verse_end")}
-                  setVerseStart={(value) =>
-                    setValue(
-                      "verse_start",
-                      value
-                    )
-                  }
-                  setVerseEnd={(value) =>
-                    setValue(
-                      "verse_end",
-                      value
-                    )
-                  }
-                  setSurah={(value) =>
-                    setValue(
-                      "surah",
-                      value
-                    )
-                  }
-                />
-              </>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                >
+                  Remplissez les informations de la séance
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              p: { xs: 2, sm: 3 },
+            }}
+          >
+            {formError && (
+              <Alert
+                severity="error"
+                sx={{
+                  mb: 2.5,
+                  borderRadius: 2,
+                  alignItems: "center",
+                }}
+              >
+                {formError}
+              </Alert>
             )}
 
+            {curriculumError && (
+              <Alert
+                severity="error"
+                sx={{
+                  mb: 2.5,
+                  borderRadius: 2,
+                  alignItems: "center",
+                }}
+              >
+                {curriculumError}
+              </Alert>
+            )}
 
-            {/* DATE */}
-
-            <TextField
-              type="date"
-              label="Date"
-              fullWidth
-              {...control.register("date")}
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
+            <Box
+              component="form"
+              onSubmit={handleSubmit(onSubmit)}
+              sx={{
+                display: "grid",
+                gap: { xs: 1.75, sm: 2 },
               }}
-            />
-
-
-            {/* DÉBUT */}
-
-            <TextField
-              type="time"
-              label="Début"
-              fullWidth
-              {...control.register("start_time")}
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
-            />
-
-
-            {/* FIN */}
-
-            <TextField
-              type="time"
-              label="Fin"
-              fullWidth
-              {...control.register("end_time")}
-              slotProps={{
-                inputLabel: {
-                  shrink: true,
-                },
-              }}
-            />
-
-
-            {/* OBSERVATION */}
-
-            <TextField
-              label="Observation"
-              multiline
-              rows={3}
-              fullWidth
-              {...control.register("notes")}
-            />
-
-
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={
-                isSubmitting ||
-                curriculumLoading
-              }
-              size="large"
             >
-              {isSubmitting
-                ? "Enregistrement..."
-                : "Enregistrer la séance"}
-            </Button>
+              {/* APPRENANT */}
+              <Controller
+                name="student"
+                control={control}
+                rules={{
+                  required: true,
+                }}
+                render={({ field }) => (
+                  <FormControl fullWidth>
+                    <InputLabel>Apprenant</InputLabel>
 
+                    <Select
+                      {...field}
+                      label="Apprenant"
+                      value={field.value || ""}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      <MenuItem value="">
+                        Sélectionner un apprenant
+                      </MenuItem>
+
+                      {students.map((student: any) => (
+                        <MenuItem
+                          key={student.id}
+                          value={student.id}
+                        >
+                          {student.full_name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              />
+
+              {/* TYPE DE SÉANCE */}
+              <Controller
+                name="session_type"
+                control={control}
+                render={({ field }) => (
+                  <FormControl fullWidth>
+                    <InputLabel>Type de séance</InputLabel>
+
+                    <Select
+                      {...field}
+                      label="Type de séance"
+                      value={field.value}
+                      onChange={(event) => {
+                        handleSessionTypeChange(
+                          event.target.value as SessionType
+                        );
+                      }}
+                      sx={{ borderRadius: 2 }}
+                    >
+                      {SESSION_TYPES.map((type) => (
+                        <MenuItem
+                          key={type.value}
+                          value={type.value}
+                        >
+                          {type.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                )}
+              />
+
+              <Divider sx={{ my: 0.5 }} />
+
+              {/* CURRICULUM HEADER */}
+              <Box
+                sx={{
+                  p: { xs: 1.5, sm: 2 },
+                  borderRadius: 2,
+                  bgcolor: "grey.50",
+                  border: "1px solid",
+                  borderColor: "divider",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1.25,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 34,
+                      height: 34,
+                      borderRadius: 1.75,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      bgcolor: "background.paper",
+                      color: "primary.main",
+                    }}
+                  >
+                    <MenuBookIcon fontSize="small" />
+                  </Box>
+
+                  <Box>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 800 }}
+                    >
+                      Curriculum
+                    </Typography>
+
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                    >
+                      Niveau, module et leçon
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              {/* NIVEAU */}
+              <FormControl fullWidth>
+                <InputLabel>Niveau</InputLabel>
+
+                <Select
+                  value={selectedLevelId || ""}
+                  label="Niveau"
+                  disabled={curriculumLoading}
+                  onChange={(event) => {
+                    handleLevelChange(
+                      Number(event.target.value)
+                    );
+                  }}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">
+                    Sélectionner un niveau
+                  </MenuItem>
+
+                  {(levels as CurriculumLevel[] | undefined)?.map(
+                    (level) => (
+                      <MenuItem
+                        key={level.id}
+                        value={level.id}
+                      >
+                        Niveau {level.level_number} — {level.name}
+                      </MenuItem>
+                    )
+                  )}
+                </Select>
+              </FormControl>
+
+              {/* MODULE */}
+              <FormControl
+                fullWidth
+                disabled={!selectedLevelId}
+              >
+                <InputLabel>Module</InputLabel>
+
+                <Select
+                  value={selectedModuleId || ""}
+                  label="Module"
+                  onChange={(event) => {
+                    handleModuleChange(
+                      Number(event.target.value)
+                    );
+                  }}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">
+                    Sélectionner un module
+                  </MenuItem>
+
+                  {modules.map((module) => (
+                    <MenuItem
+                      key={module.id}
+                      value={module.id}
+                    >
+                      {module.order}. {module.title}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {/* LEÇON */}
+              <FormControl
+                fullWidth
+                disabled={!selectedModuleId}
+              >
+                <InputLabel>Leçon</InputLabel>
+
+                <Select
+                  value={selectedLessonId || ""}
+                  label="Leçon"
+                  onChange={(event) => {
+                    setValue(
+                      "lesson",
+                      Number(event.target.value)
+                    );
+                  }}
+                  sx={{ borderRadius: 2 }}
+                >
+                  <MenuItem value="">
+                    Sélectionner une leçon
+                  </MenuItem>
+
+                  {lessons.map((lesson) => (
+                    <MenuItem
+                      key={lesson.id}
+                      value={lesson.id}
+                    >
+                      {lesson.order}. {lesson.title}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {/* INFORMATIONS LEÇON */}
+              {selectedLesson && (
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: { xs: 1.75, sm: 2 },
+                    borderRadius: 2.5,
+                    bgcolor: "primary.50",
+                    borderColor: "primary.100",
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      fontWeight: 800,
+                      color: "text.primary",
+                    }}
+                  >
+                    {selectedLesson.title}
+                  </Typography>
+
+                  {selectedLesson.objectives && (
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        mt: 1,
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      <strong>Objectifs :</strong>{" "}
+                      {selectedLesson.objectives}
+                    </Typography>
+                  )}
+
+                  {selectedLesson.duration_minutes && (
+                    <Chip
+                      size="small"
+                      icon={<AccessTimeIcon />}
+                      label={`${selectedLesson.duration_minutes} min`}
+                      sx={{
+                        mt: 1.5,
+                        borderRadius: 1.5,
+                        fontWeight: 600,
+                      }}
+                    />
+                  )}
+                </Paper>
+              )}
+
+              {/* CORAN */}
+              {selectedSessionType === "QURAN" && (
+                <>
+                  <Divider sx={{ my: 0.5 }} />
+
+                  <Box
+                    sx={{
+                      p: { xs: 1.5, sm: 2 },
+                      borderRadius: 2,
+                      bgcolor: "grey.50",
+                      border: "1px solid",
+                      borderColor: "divider",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.25,
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          width: 34,
+                          height: 34,
+                          borderRadius: 1.75,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          bgcolor: "background.paper",
+                          color: "primary.main",
+                        }}
+                      >
+                        <MenuBookIcon fontSize="small" />
+                      </Box>
+
+                      <Box>
+                        <Typography
+                          variant="subtitle1"
+                          sx={{ fontWeight: 800 }}
+                        >
+                          Contenu coranique
+                        </Typography>
+
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                        >
+                          Sourate et passages étudiés
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+
+                  <QuranSelector
+                    verseStart={watch("verse_start")}
+                    verseEnd={watch("verse_end")}
+                    setVerseStart={(value) =>
+                      setValue(
+                        "verse_start",
+                        value
+                      )
+                    }
+                    setVerseEnd={(value) =>
+                      setValue(
+                        "verse_end",
+                        value
+                      )
+                    }
+                    setSurah={(value) =>
+                      setValue(
+                        "surah",
+                        value
+                      )
+                    }
+                  />
+                </>
+              )}
+
+              {/* DATE / HEURES */}
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "1fr",
+                    sm: "repeat(3, 1fr)",
+                  },
+                  gap: 1.5,
+                }}
+              >
+                <TextField
+                  type="date"
+                  label="Date"
+                  fullWidth
+                  {...control.register("date")}
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 2,
+                    },
+                  }}
+                />
+
+                <TextField
+                  type="time"
+                  label="Début"
+                  fullWidth
+                  {...control.register("start_time")}
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 2,
+                    },
+                  }}
+                />
+
+                <TextField
+                  type="time"
+                  label="Fin"
+                  fullWidth
+                  {...control.register("end_time")}
+                  slotProps={{
+                    inputLabel: {
+                      shrink: true,
+                    },
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 2,
+                    },
+                  }}
+                />
+              </Box>
+
+              {/* OBSERVATION */}
+              <TextField
+                label="Observation"
+                multiline
+                rows={4}
+                fullWidth
+                placeholder="Ajouter une observation concernant la séance..."
+                {...control.register("notes")}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                  },
+                }}
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={
+                  isSubmitting ||
+                  curriculumLoading
+                }
+                size="large"
+                startIcon={
+                  isSubmitting ? (
+                    <CircularProgress
+                      size={18}
+                      color="inherit"
+                    />
+                  ) : (
+                    <SaveIcon />
+                  )
+                }
+                sx={{
+                  minHeight: 50,
+                  borderRadius: 2,
+                  textTransform: "none",
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  boxShadow:
+                    "0 6px 16px rgba(25, 118, 210, 0.2)",
+                  "&:hover": {
+                    boxShadow:
+                      "0 8px 20px rgba(25, 118, 210, 0.28)",
+                  },
+                }}
+              >
+                {isSubmitting
+                  ? "Enregistrement..."
+                  : "Enregistrer la séance"}
+              </Button>
+            </Box>
           </Box>
         </Paper>
 
-
-        {/* ============================= */}
         {/* HISTORIQUE */}
-        {/* ============================= */}
-
-        <Paper
-          sx={{
-            p: 3,
-            borderRadius: 3,
-          }}
-        >
+        <Paper sx={paperSx}>
           <Box
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              gap: 2,
-              mb: 2,
+              px: { xs: 2, sm: 3 },
+              py: { xs: 2, sm: 2.5 },
+              borderBottom: "1px solid",
+              borderColor: "divider",
             }}
           >
-            <Box>
-              <Typography
-                variant="h6"
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                justifyContent: "space-between",
+                alignItems: { xs: "stretch", sm: "center" },
+                gap: 2,
+              }}
+            >
+              <Box
                 sx={{
-                  fontWeight: 700,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1.5,
                 }}
               >
-                Historique
-              </Typography>
+                <Box
+                  sx={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    bgcolor: "grey.100",
+                    color: "primary.main",
+                  }}
+                >
+                  <PeopleAltIcon fontSize="small" />
+                </Box>
 
-              <Typography
-                variant="body2"
-                color="text.secondary"
-              >
-                Séances enregistrées
-              </Typography>
-            </Box>
+                <Box>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      ...sectionTitleSx,
+                      fontSize: { xs: "1rem", sm: "1.1rem" },
+                    }}
+                  >
+                    Historique
+                  </Typography>
 
-            <TextField
-              placeholder="Recherche..."
-              size="small"
-              value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
-            />
-          </Box>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                  >
+                    Séances enregistrées
+                  </Typography>
+                </Box>
+              </Box>
 
-
-          {error && (
-            <Alert
-              severity="error"
-              sx={{ mb: 2 }}
-            >
-              {error}
-            </Alert>
-          )}
-
-
-          {loading ? (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                py: 5,
-              }}
-            >
-              <CircularProgress />
-            </Box>
-          ) : (
-            <Box sx={{ overflowX: "auto" }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      Apprenant
-                    </TableCell>
-
-                    <TableCell>
-                      Type
-                    </TableCell>
-
-                    <TableCell>
-                      Niveau
-                    </TableCell>
-
-                    <TableCell>
-                      Leçon
-                    </TableCell>
-
-                    <TableCell>
-                      Sourate
-                    </TableCell>
-
-                    <TableCell>
-                      Versets
-                    </TableCell>
-
-                    <TableCell>
-                      Date
-                    </TableCell>
-
-                    <TableCell>
-                      Enseignant
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-
-
-                <TableBody>
-                  {tableRows.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={8}
-                        align="center"
-                      >
-                        Aucune séance enregistrée.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    tableRows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        hover
-                      >
-                        <TableCell>
-                          {row.student}
-                        </TableCell>
-
-                        <TableCell>
-                          <Chip
-                            size="small"
-                            label={row.type}
-                          />
-                        </TableCell>
-
-                        <TableCell>
-                          {row.level}
-                        </TableCell>
-
-                        <TableCell>
-                          {row.lesson}
-                        </TableCell>
-
-                        <TableCell>
-                          {row.surah}
-                        </TableCell>
-
-                        <TableCell>
-                          {row.verses}
-                        </TableCell>
-
-                        <TableCell>
-                          {row.date}
-                        </TableCell>
-
-                        <TableCell>
-                          {row.teacher}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </Box>
-          )}
-
-
-          {total !== null && (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                mt: 2,
-              }}
-            >
-              <Pagination
-                count={Math.max(
-                  1,
-                  Math.ceil(
-                    total / pageSize
-                  )
-                )}
-                page={page}
-                onChange={(_, value) =>
-                  setPage(value)
+              <TextField
+                placeholder="Rechercher..."
+                size="small"
+                value={search}
+                onChange={(event) =>
+                  setSearch(event.target.value)
                 }
+                fullWidth
+                sx={{
+                  maxWidth: { sm: 280 },
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: 2,
+                  },
+                }}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <SearchIcon
+                        fontSize="small"
+                        sx={{
+                          mr: 1,
+                          color: "text.secondary",
+                        }}
+                      />
+                    ),
+                  },
+                }}
               />
             </Box>
-          )}
+          </Box>
 
+          <Box sx={{ p: { xs: 1.5, sm: 2, md: 3 } }}>
+            {error && (
+              <Alert
+                severity="error"
+                sx={{
+                  mb: 2,
+                  borderRadius: 2,
+                }}
+              >
+                {error}
+              </Alert>
+            )}
+
+            {loading ? (
+              <Box
+                sx={{
+                  minHeight: 300,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  gap: 2,
+                }}
+              >
+                <CircularProgress size={34} />
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                >
+                  Chargement des séances...
+                </Typography>
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  width: "100%",
+                  overflowX: "auto",
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: 2.5,
+                }}
+              >
+                <Table
+                  size="small"
+                  sx={{
+                    minWidth: 1000,
+                    "& .MuiTableCell-root": {
+                      borderColor: "divider",
+                    },
+                    "& .MuiTableHead-root .MuiTableCell-root": {
+                      bgcolor: "grey.50",
+                      fontWeight: 800,
+                      whiteSpace: "nowrap",
+                      color: "text.secondary",
+                      fontSize: "0.75rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.03em",
+                    },
+                    "& .MuiTableBody-root .MuiTableRow-root:hover": {
+                      bgcolor: "action.hover",
+                    },
+                  }}
+                >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Apprenant</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Niveau</TableCell>
+                      <TableCell>Leçon</TableCell>
+                      <TableCell>Sourate</TableCell>
+                      <TableCell>Versets</TableCell>
+                      <TableCell>Date</TableCell>
+                      <TableCell>Enseignant</TableCell>
+                    </TableRow>
+                  </TableHead>
+
+                  <TableBody>
+                    {tableRows.length === 0 ? (
+                      <TableRow>
+                        <TableCell
+                          colSpan={8}
+                          align="center"
+                          sx={{
+                            py: 7,
+                            color: "text.secondary",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              gap: 1,
+                            }}
+                          >
+                            <MenuBookIcon
+                              sx={{
+                                fontSize: 42,
+                                color: "text.disabled",
+                              }}
+                            />
+
+                            <Typography
+                              variant="body1"
+                              sx={{ fontWeight: 600 }}
+                            >
+                              Aucune séance enregistrée
+                            </Typography>
+
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                            >
+                              Les séances enregistrées apparaîtront ici.
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      tableRows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          hover
+                        >
+                          <TableCell
+                            sx={{
+                              fontWeight: 700,
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {row.student}
+                          </TableCell>
+
+                          <TableCell>
+                            <Chip
+                              size="small"
+                              label={row.type}
+                              sx={{
+                                borderRadius: 1.5,
+                                fontWeight: 600,
+                              }}
+                            />
+                          </TableCell>
+
+                          <TableCell
+                            sx={{ whiteSpace: "nowrap" }}
+                          >
+                            {row.level}
+                          </TableCell>
+
+                          <TableCell
+                            sx={{
+                              maxWidth: 220,
+                              minWidth: 180,
+                            }}
+                          >
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 600,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              {row.lesson}
+                            </Typography>
+                          </TableCell>
+
+                          <TableCell
+                            sx={{ whiteSpace: "nowrap" }}
+                          >
+                            {row.surah}
+                          </TableCell>
+
+                          <TableCell>
+                            <Chip
+                              size="small"
+                              variant="outlined"
+                              label={row.verses}
+                              sx={{
+                                borderRadius: 1.5,
+                                fontWeight: 600,
+                              }}
+                            />
+                          </TableCell>
+
+                          <TableCell
+                            sx={{ whiteSpace: "nowrap" }}
+                          >
+                            {row.date}
+                          </TableCell>
+
+                          <TableCell
+                            sx={{
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {row.teacher}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </Box>
+            )}
+
+            {total !== null && (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mt: 2.5,
+                  overflowX: "auto",
+                }}
+              >
+                <Pagination
+                  count={Math.max(
+                    1,
+                    Math.ceil(total / pageSize)
+                  )}
+                  page={page}
+                  onChange={(_, value) =>
+                    setPage(value)
+                  }
+                  color="primary"
+                  shape="rounded"
+                  size="medium"
+                  siblingCount={0}
+                  boundaryCount={1}
+                />
+              </Box>
+            )}
+          </Box>
         </Paper>
       </Box>
     </Box>
   );
 }
 
-
 export default Darasa;
-

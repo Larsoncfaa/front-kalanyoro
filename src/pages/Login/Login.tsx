@@ -52,7 +52,7 @@ function Login() {
           </Box>
           <Box sx={{ textAlign: "center" }}>
             <Typography variant="h4" sx={{ fontWeight: 800, color: "primary.dark" }}>
-              Kalanyoro LMS
+              Kalanyoro 
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
               Plateforme moderne de gestion pédagogique et de suivi des apprenants

@@ -1,23 +1,24 @@
 import { useState, useEffect } from "react";
+
 import {
-  Box,
-  Paper,
-  Typography,
-  TextField,
-  Button,
-  Avatar,
-  Divider,
   Alert,
-  CircularProgress,
-  Grid,
+  Avatar,
+  Box,
+  Button,
   Card,
   CardContent,
-  IconButton,
+  CircularProgress,
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Grid,
+  IconButton,
   InputAdornment,
+  Paper,
+  TextField,
+  Typography,
 } from "@mui/material";
 
 import PersonIcon from "@mui/icons-material/Person";
@@ -43,11 +44,18 @@ interface FormData {
 }
 
 function Profile() {
-  const { user, loading, error, success, updateProfile, clearMessages } =
-    useProfile();
+  const {
+    user,
+    loading,
+    error,
+    success,
+    updateProfile,
+    clearMessages,
+  } = useProfile();
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
+
   const [showPasswords, setShowPasswords] = useState({
     new: false,
     confirm: false,
@@ -64,7 +72,10 @@ function Profile() {
 
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Initialiser le formulaire avec les données utilisateur
+  // =========================================================
+  // INITIALISATION DU FORMULAIRE
+  // =========================================================
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -78,7 +89,14 @@ function Profile() {
     }
   }, [user]);
 
-  const handleInputChange = (field: keyof FormData, value: string) => {
+  // =========================================================
+  // CHANGEMENT DES CHAMPS
+  // =========================================================
+
+  const handleInputChange = (
+    field: keyof FormData,
+    value: string
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -86,6 +104,10 @@ function Profile() {
 
     setFormError(null);
   };
+
+  // =========================================================
+  // SAUVEGARDE PROFIL
+  // =========================================================
 
   const handleSaveProfile = async () => {
     setFormError(null);
@@ -106,26 +128,44 @@ function Profile() {
       setIsEditMode(false);
     } catch (err) {
       setFormError(
-        err instanceof Error ? err.message : "Erreur lors de la sauvegarde"
+        err instanceof Error
+          ? err.message
+          : "Erreur lors de la sauvegarde"
       );
     }
   };
 
+  // =========================================================
+  // CHANGEMENT MOT DE PASSE
+  // =========================================================
+
   const handleChangePassword = async () => {
     setFormError(null);
 
-    if (!formData.new_password || !formData.confirm_password) {
-      setFormError("Veuillez entrer le nouveau mot de passe");
+    if (
+      !formData.new_password ||
+      !formData.confirm_password
+    ) {
+      setFormError(
+        "Veuillez entrer le nouveau mot de passe"
+      );
       return;
     }
 
-    if (formData.new_password !== formData.confirm_password) {
-      setFormError("Les mots de passe ne correspondent pas");
+    if (
+      formData.new_password !==
+      formData.confirm_password
+    ) {
+      setFormError(
+        "Les mots de passe ne correspondent pas"
+      );
       return;
     }
 
     if (formData.new_password.length < 8) {
-      setFormError("Le mot de passe doit contenir au moins 8 caractères");
+      setFormError(
+        "Le mot de passe doit contenir au moins 8 caractères"
+      );
       return;
     }
 
@@ -151,13 +191,28 @@ function Profile() {
     }
   };
 
+  // =========================================================
+  // LOADING
+  // =========================================================
+
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+      <Box
+        sx={{
+          minHeight: 300,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
   }
+
+  // =========================================================
+  // USER ABSENT
+  // =========================================================
 
   if (!user) {
     return (
@@ -167,39 +222,82 @@ function Profile() {
     );
   }
 
-  const fullName = `${formData.first_name} ${formData.last_name}`;
+  // =========================================================
+  // INFORMATIONS CALCULÉES
+  // =========================================================
+
+  const fullName =
+    `${formData.first_name} ${formData.last_name}`.trim();
 
   const initials =
     `${formData.first_name.charAt(0)}${formData.last_name.charAt(
       0
     )}`.toUpperCase();
 
+  // =========================================================
+  // RENDER
+  // =========================================================
+
   return (
-    <Box>
-      {/* En-tête */}
-      <Box sx={{ mb: 4 }}>
+    <Box
+      sx={{
+        width: "100%",
+        maxWidth: 1400,
+        mx: "auto",
+      }}
+    >
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
+
+      <Box
+        sx={{
+          mb: { xs: 2.5, sm: 3, md: 4 },
+        }}
+      >
         <Typography
           variant="h4"
           sx={{
             fontWeight: 800,
             color: "#0f172a",
-            mb: 1,
+            fontSize: {
+              xs: "1.75rem",
+              sm: "2rem",
+              md: "2.25rem",
+            },
+            lineHeight: 1.2,
           }}
         >
           Mon Profil
         </Typography>
 
-        <Typography color="text.secondary">
-          Gérez vos informations personnelles et vos paramètres de compte
+        <Typography
+          color="text.secondary"
+          sx={{
+            mt: 1,
+            fontSize: {
+              xs: "0.9rem",
+              sm: "1rem",
+            },
+          }}
+        >
+          Gérez vos informations personnelles et vos
+          paramètres de compte
         </Typography>
       </Box>
 
-      {/* Messages de statut */}
+      {/* =====================================================
+          MESSAGES
+      ===================================================== */}
+
       {error && (
         <Alert
           severity="error"
           onClose={() => clearMessages()}
-          sx={{ mb: 3 }}
+          sx={{
+            mb: 3,
+            borderRadius: 2,
+          }}
         >
           {error}
         </Alert>
@@ -209,134 +307,270 @@ function Profile() {
         <Alert
           severity="success"
           onClose={() => clearMessages()}
-          sx={{ mb: 3 }}
+          sx={{
+            mb: 3,
+            borderRadius: 2,
+          }}
         >
           Profil mis à jour avec succès
         </Alert>
       )}
 
-      {/* Carte profil principal */}
+      {/* =====================================================
+          PROFIL PRINCIPAL
+      ===================================================== */}
+
       <Paper
         elevation={0}
         sx={{
-          p: 4,
-          borderRadius: 4,
+          p: {
+            xs: 2,
+            sm: 3,
+            md: 4,
+          },
+          borderRadius: {
+            xs: 3,
+            md: 4,
+          },
           border: "1px solid #e2e8f0",
           background:
             "linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)",
-          mb: 4,
+          mb: {
+            xs: 2.5,
+            sm: 3,
+            md: 4,
+          },
+          overflow: "hidden",
         }}
       >
-        {/* En-tête du profil */}
+        {/* ===================================================
+            PROFIL HEADER
+        =================================================== */}
+
         <Box
           sx={{
             display: "flex",
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
             justifyContent: "space-between",
-            alignItems: "flex-start",
-            mb: 3,
+            alignItems: {
+              xs: "stretch",
+              sm: "flex-start",
+            },
+            gap: {
+              xs: 2.5,
+              sm: 3,
+            },
           }}
         >
-          <Box sx={{ display: "flex", gap: 3, alignItems: "center" }}>
+          {/* IDENTITÉ */}
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: {
+                xs: "column",
+                sm: "row",
+              },
+              alignItems: {
+                xs: "center",
+                sm: "center",
+              },
+              textAlign: {
+                xs: "center",
+                sm: "left",
+              },
+              gap: {
+                xs: 2,
+                sm: 2.5,
+                md: 3,
+              },
+              minWidth: 0,
+            }}
+          >
             <Avatar
               sx={{
-                width: 100,
-                height: 100,
+                width: {
+                  xs: 76,
+                  sm: 90,
+                  md: 100,
+                },
+                height: {
+                  xs: 76,
+                  sm: 90,
+                  md: 100,
+                },
                 bgcolor: "#059669",
-                fontSize: 40,
+                fontSize: {
+                  xs: 30,
+                  sm: 36,
+                  md: 40,
+                },
                 fontWeight: 700,
+                flexShrink: 0,
+                boxShadow:
+                  "0 8px 24px rgba(5, 150, 105, 0.22)",
               }}
             >
               {initials}
             </Avatar>
 
-            <Box>
-              <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+            <Box
+              sx={{
+                minWidth: 0,
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 700,
+                  mb: 0.5,
+                  fontSize: {
+                    xs: "1.25rem",
+                    sm: "1.4rem",
+                    md: "1.5rem",
+                  },
+                  overflowWrap: "anywhere",
+                }}
+              >
                 {fullName}
               </Typography>
 
-              <Typography color="text.secondary" sx={{ mb: 1 }}>
+              <Typography
+                color="text.secondary"
+                sx={{
+                  mb: 1.5,
+                  fontSize: "0.9rem",
+                  overflowWrap: "anywhere",
+                }}
+              >
                 @{user.username}
               </Typography>
 
-              <Box sx={{ display: "flex", gap: 1 }}>
-                <Typography
-                  variant="caption"
+              {/* BADGES */}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: {
+                    xs: "center",
+                    sm: "flex-start",
+                  },
+                  gap: 1,
+                }}
+              >
+                <Box
+                  component="span"
                   sx={{
                     px: 1.5,
-                    py: 0.5,
-                    borderRadius: 1,
+                    py: 0.6,
+                    borderRadius: 2,
                     bgcolor:
-                      user.role === "ADMIN" ? "#dbeafe" : "#dcfce7",
+                      user.role === "ADMIN"
+                        ? "#dbeafe"
+                        : "#dcfce7",
                     color:
-                      user.role === "ADMIN" ? "#0369a1" : "#166534",
+                      user.role === "ADMIN"
+                        ? "#0369a1"
+                        : "#166534",
                     fontWeight: 600,
+                    fontSize: "0.75rem",
                   }}
                 >
                   {user.role === "ADMIN"
                     ? "Administrateur"
                     : "Enseignant"}
-                </Typography>
+                </Box>
 
-                {user.is_active ? (
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 1,
-                      bgcolor: "#dcfce7",
-                      color: "#166534",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Actif
-                  </Typography>
-                ) : (
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 1,
-                      bgcolor: "#fee2e2",
-                      color: "#7f1d1d",
-                      fontWeight: 600,
-                    }}
-                  >
-                    Inactif
-                  </Typography>
-                )}
+                <Box
+                  component="span"
+                  sx={{
+                    px: 1.5,
+                    py: 0.6,
+                    borderRadius: 2,
+                    bgcolor: user.is_active
+                      ? "#dcfce7"
+                      : "#fee2e2",
+                    color: user.is_active
+                      ? "#166534"
+                      : "#7f1d1d",
+                    fontWeight: 600,
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  {user.is_active
+                    ? "Actif"
+                    : "Inactif"}
+                </Box>
               </Box>
             </Box>
           </Box>
 
-          <Box>
+          {/* ACTIONS */}
+
+          <Box
+            sx={{
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              flexShrink: 0,
+            }}
+          >
             {!isEditMode ? (
               <Button
+                fullWidth
                 variant="contained"
                 startIcon={<EditIcon />}
-                onClick={() => setIsEditMode(true)}
+                onClick={() =>
+                  setIsEditMode(true)
+                }
                 sx={{
+                  minHeight: 44,
+                  px: 2.5,
                   background:
                     "linear-gradient(135deg, #0f766e, #059669)",
                   textTransform: "none",
                   fontWeight: 600,
+                  borderRadius: 2,
+                  boxShadow:
+                    "0 6px 16px rgba(15, 118, 110, 0.18)",
+                  "&:hover": {
+                    background:
+                      "linear-gradient(135deg, #115e59, #047857)",
+                  },
                 }}
               >
                 Modifier le profil
               </Button>
             ) : (
-              <Box sx={{ display: "flex", gap: 1 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: {
+                    xs: "column",
+                    sm: "row",
+                  },
+                  gap: 1,
+                }}
+              >
                 <Button
                   variant="contained"
                   startIcon={<SaveIcon />}
                   onClick={handleSaveProfile}
                   disabled={loading}
                   sx={{
+                    minHeight: 44,
+                    px: 2,
                     background:
                       "linear-gradient(135deg, #0f766e, #059669)",
                     textTransform: "none",
                     fontWeight: 600,
+                    borderRadius: 2,
+                    whiteSpace: "nowrap",
                   }}
                 >
                   Enregistrer
@@ -345,10 +579,16 @@ function Profile() {
                 <Button
                   variant="outlined"
                   startIcon={<CancelIcon />}
-                  onClick={() => setIsEditMode(false)}
+                  onClick={() =>
+                    setIsEditMode(false)
+                  }
                   sx={{
+                    minHeight: 44,
+                    px: 2,
                     textTransform: "none",
                     fontWeight: 600,
+                    borderRadius: 2,
+                    whiteSpace: "nowrap",
                   }}
                 >
                   Annuler
@@ -358,24 +598,42 @@ function Profile() {
           </Box>
         </Box>
 
-        <Divider sx={{ my: 4 }} />
+        <Divider
+          sx={{
+            my: {
+              xs: 2.5,
+              sm: 3,
+              md: 4,
+            },
+          }}
+        />
 
-        {/* Formulaire */}
-        <Grid container spacing={3}>
+        {/* ===================================================
+            FORMULAIRE
+        =================================================== */}
+
+        <Grid container spacing={{ xs: 2, sm: 2.5, md: 3 }}>
+          {/* PRÉNOM */}
+
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth
               label="Prénom"
               value={formData.first_name}
               onChange={(e) =>
-                handleInputChange("first_name", e.target.value)
+                handleInputChange(
+                  "first_name",
+                  e.target.value
+                )
               }
               disabled={!isEditMode || loading}
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <PersonIcon sx={{ color: "#0f766e" }} />
+                      <PersonIcon
+                        sx={{ color: "#0f766e" }}
+                      />
                     </InputAdornment>
                   ),
                 },
@@ -383,6 +641,8 @@ function Profile() {
               variant="outlined"
             />
           </Grid>
+
+          {/* NOM */}
 
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
@@ -390,14 +650,19 @@ function Profile() {
               label="Nom"
               value={formData.last_name}
               onChange={(e) =>
-                handleInputChange("last_name", e.target.value)
+                handleInputChange(
+                  "last_name",
+                  e.target.value
+                )
               }
               disabled={!isEditMode || loading}
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <PersonIcon sx={{ color: "#0f766e" }} />
+                      <PersonIcon
+                        sx={{ color: "#0f766e" }}
+                      />
                     </InputAdornment>
                   ),
                 },
@@ -405,6 +670,8 @@ function Profile() {
               variant="outlined"
             />
           </Grid>
+
+          {/* EMAIL */}
 
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
@@ -413,14 +680,19 @@ function Profile() {
               type="email"
               value={formData.email}
               onChange={(e) =>
-                handleInputChange("email", e.target.value)
+                handleInputChange(
+                  "email",
+                  e.target.value
+                )
               }
               disabled={!isEditMode || loading}
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <EmailIcon sx={{ color: "#0f766e" }} />
+                      <EmailIcon
+                        sx={{ color: "#0f766e" }}
+                      />
                     </InputAdornment>
                   ),
                 },
@@ -429,20 +701,27 @@ function Profile() {
             />
           </Grid>
 
+          {/* TÉLÉPHONE */}
+
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
               fullWidth
               label="Téléphone"
               value={formData.phone}
               onChange={(e) =>
-                handleInputChange("phone", e.target.value)
+                handleInputChange(
+                  "phone",
+                  e.target.value
+                )
               }
               disabled={!isEditMode || loading}
               slotProps={{
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <PhoneIcon sx={{ color: "#0f766e" }} />
+                      <PhoneIcon
+                        sx={{ color: "#0f766e" }}
+                      />
                     </InputAdornment>
                   ),
                 },
@@ -450,6 +729,8 @@ function Profile() {
               variant="outlined"
             />
           </Grid>
+
+          {/* USERNAME */}
 
           <Grid size={{ xs: 12, sm: 6 }}>
             <TextField
@@ -461,7 +742,9 @@ function Profile() {
                 input: {
                   startAdornment: (
                     <InputAdornment position="start">
-                      <BadgeIcon sx={{ color: "#0f766e" }} />
+                      <BadgeIcon
+                        sx={{ color: "#0f766e" }}
+                      />
                     </InputAdornment>
                   ),
                 },
@@ -471,19 +754,28 @@ function Profile() {
             />
           </Grid>
 
+          {/* MOT DE PASSE */}
+
           <Grid size={{ xs: 12, sm: 6 }}>
             <Button
               fullWidth
               variant="outlined"
               startIcon={<LockIcon />}
-              onClick={() => setShowPasswordDialog(true)}
+              onClick={() =>
+                setShowPasswordDialog(true)
+              }
               disabled={loading}
               sx={{
-                height: "56px",
+                height: 56,
                 textTransform: "none",
                 fontWeight: 600,
                 borderColor: "#0f766e",
                 color: "#0f766e",
+                borderRadius: 2,
+                "&:hover": {
+                  borderColor: "#0f766e",
+                  bgcolor: "rgba(15, 118, 110, 0.05)",
+                },
               }}
             >
               Changer le mot de passe
@@ -492,15 +784,53 @@ function Profile() {
         </Grid>
       </Paper>
 
-      {/* Statistiques du compte */}
-      <Grid container spacing={3}>
+      {/* =====================================================
+          STATISTIQUES
+      ===================================================== */}
+
+      <Grid
+        container
+        spacing={{ xs: 2, sm: 2.5, md: 3 }}
+      >
+        {/* RÔLE */}
+
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <Card sx={{ borderRadius: 2 }}>
-            <CardContent>
-              <Typography color="text.secondary" gutterBottom>
+          <Card
+            elevation={0}
+            sx={{
+              height: "100%",
+              borderRadius: 3,
+              border: "1px solid #e2e8f0",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow:
+                  "0 8px 24px rgba(15, 23, 42, 0.08)",
+              },
+            }}
+          >
+            <CardContent
+              sx={{
+                p: {
+                  xs: 2,
+                  sm: 2.5,
+                },
+              }}
+            >
+              <Typography
+                color="text.secondary"
+                gutterBottom
+              >
                 Rôle
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
+
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 700,
+                  overflowWrap: "anywhere",
+                }}
+              >
                 {user.role === "ADMIN"
                   ? "Administrateur"
                   : "Enseignant"}
@@ -509,42 +839,126 @@ function Profile() {
           </Card>
         </Grid>
 
+        {/* STATUT */}
+
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <Card sx={{ borderRadius: 2 }}>
-            <CardContent>
-              <Typography color="text.secondary" gutterBottom>
+          <Card
+            elevation={0}
+            sx={{
+              height: "100%",
+              borderRadius: 3,
+              border: "1px solid #e2e8f0",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow:
+                  "0 8px 24px rgba(15, 23, 42, 0.08)",
+              },
+            }}
+          >
+            <CardContent
+              sx={{
+                p: {
+                  xs: 2,
+                  sm: 2.5,
+                },
+              }}
+            >
+              <Typography
+                color="text.secondary"
+                gutterBottom
+              >
                 Statut
               </Typography>
+
               <Typography
                 variant="h6"
                 sx={{
                   fontWeight: 700,
-                  color: user.is_active ? "#059669" : "#dc2626",
+                  color: user.is_active
+                    ? "#059669"
+                    : "#dc2626",
                 }}
               >
-                {user.is_active ? "Actif" : "Inactif"}
+                {user.is_active
+                  ? "Actif"
+                  : "Inactif"}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
+        {/* ID */}
+
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <Card sx={{ borderRadius: 2 }}>
-            <CardContent>
-              <Typography color="text.secondary" gutterBottom>
+          <Card
+            elevation={0}
+            sx={{
+              height: "100%",
+              borderRadius: 3,
+              border: "1px solid #e2e8f0",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow:
+                  "0 8px 24px rgba(15, 23, 42, 0.08)",
+              },
+            }}
+          >
+            <CardContent
+              sx={{
+                p: {
+                  xs: 2,
+                  sm: 2.5,
+                },
+              }}
+            >
+              <Typography
+                color="text.secondary"
+                gutterBottom
+              >
                 ID Utilisateur
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 700 }}>
+
+              <Typography
+                variant="h6"
+                sx={{ fontWeight: 700 }}
+              >
                 #{user.id}
               </Typography>
             </CardContent>
           </Card>
         </Grid>
 
+        {/* MEMBRE DEPUIS */}
+
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <Card sx={{ borderRadius: 2 }}>
-            <CardContent>
-              <Typography color="text.secondary" gutterBottom>
+          <Card
+            elevation={0}
+            sx={{
+              height: "100%",
+              borderRadius: 3,
+              border: "1px solid #e2e8f0",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                transform: "translateY(-2px)",
+                boxShadow:
+                  "0 8px 24px rgba(15, 23, 42, 0.08)",
+              },
+            }}
+          >
+            <CardContent
+              sx={{
+                p: {
+                  xs: 2,
+                  sm: 2.5,
+                },
+              }}
+            >
+              <Typography
+                color="text.secondary"
+                gutterBottom
+              >
                 Membre depuis
               </Typography>
 
@@ -552,13 +966,16 @@ function Profile() {
                 variant="h6"
                 sx={{
                   fontWeight: 700,
-                  fontSize: 14,
+                  fontSize: {
+                    xs: 14,
+                    sm: 15,
+                  },
                 }}
               >
                 {user.created_at
-                  ? new Date(user.created_at).toLocaleDateString(
-                      "fr-FR"
-                    )
+                  ? new Date(
+                      user.created_at
+                    ).toLocaleDateString("fr-FR")
                   : "N/A"}
               </Typography>
             </CardContent>
@@ -566,32 +983,91 @@ function Profile() {
         </Grid>
       </Grid>
 
-      {/* Dialog changement de mot de passe */}
+      {/* =====================================================
+          DIALOG MOT DE PASSE
+      ===================================================== */}
+
       <Dialog
         open={showPasswordDialog}
         onClose={() => {
+          if (loading) return;
+
           setShowPasswordDialog(false);
           setFormError(null);
         }}
         maxWidth="sm"
         fullWidth
+        fullScreen={false}
+        sx={{
+          "& .MuiDialog-paper": {
+            borderRadius: {
+              xs: 0,
+              sm: 3,
+            },
+            mx: {
+              xs: 0,
+              sm: 2,
+            },
+            width: {
+              xs: "100%",
+              sm: "calc(100% - 32px)",
+            },
+          },
+        }}
       >
-        <DialogTitle>Changer le mot de passe</DialogTitle>
+        <DialogTitle
+          sx={{
+            fontWeight: 700,
+            px: {
+              xs: 2,
+              sm: 3,
+            },
+            pt: {
+              xs: 2,
+              sm: 3,
+            },
+          }}
+        >
+          Changer le mot de passe
+        </DialogTitle>
 
-        <DialogContent sx={{ pt: 3 }}>
+        <DialogContent
+          sx={{
+            px: {
+              xs: 2,
+              sm: 3,
+            },
+            pt: "16px !important",
+          }}
+        >
           {formError && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert
+              severity="error"
+              sx={{
+                mb: 2,
+                borderRadius: 2,
+              }}
+            >
               {formError}
             </Alert>
           )}
 
+          {/* NOUVEAU MOT DE PASSE */}
+
           <TextField
             fullWidth
             label="Nouveau mot de passe"
-            type={showPasswords.new ? "text" : "password"}
+            type={
+              showPasswords.new
+                ? "text"
+                : "password"
+            }
             value={formData.new_password}
             onChange={(e) =>
-              handleInputChange("new_password", e.target.value)
+              handleInputChange(
+                "new_password",
+                e.target.value
+              )
             }
             disabled={loading}
             sx={{ mb: 2 }}
@@ -607,6 +1083,12 @@ function Profile() {
                         }))
                       }
                       edge="end"
+                      disabled={loading}
+                      aria-label={
+                        showPasswords.new
+                          ? "Masquer le mot de passe"
+                          : "Afficher le mot de passe"
+                      }
                     >
                       {showPasswords.new ? (
                         <VisibilityOffIcon />
@@ -620,13 +1102,22 @@ function Profile() {
             }}
           />
 
+          {/* CONFIRMATION */}
+
           <TextField
             fullWidth
             label="Confirmer le mot de passe"
-            type={showPasswords.confirm ? "text" : "password"}
+            type={
+              showPasswords.confirm
+                ? "text"
+                : "password"
+            }
             value={formData.confirm_password}
             onChange={(e) =>
-              handleInputChange("confirm_password", e.target.value)
+              handleInputChange(
+                "confirm_password",
+                e.target.value
+              )
             }
             disabled={loading}
             slotProps={{
@@ -641,6 +1132,12 @@ function Profile() {
                         }))
                       }
                       edge="end"
+                      disabled={loading}
+                      aria-label={
+                        showPasswords.confirm
+                          ? "Masquer le mot de passe"
+                          : "Afficher le mot de passe"
+                      }
                     >
                       {showPasswords.confirm ? (
                         <VisibilityOffIcon />
@@ -658,21 +1155,46 @@ function Profile() {
             variant="caption"
             color="text.secondary"
             sx={{
-              mt: 1,
+              mt: 1.5,
               display: "block",
+              lineHeight: 1.5,
             }}
           >
-            Le mot de passe doit contenir au moins 8 caractères
+            Le mot de passe doit contenir au moins
+            8 caractères.
           </Typography>
         </DialogContent>
 
-        <DialogActions sx={{ p: 2 }}>
+        <DialogActions
+          sx={{
+            p: {
+              xs: 2,
+              sm: 3,
+            },
+            flexDirection: {
+              xs: "column-reverse",
+              sm: "row",
+            },
+            gap: 1,
+            "& > button": {
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              minHeight: 44,
+            },
+          }}
+        >
           <Button
             onClick={() => {
               setShowPasswordDialog(false);
               setFormError(null);
             }}
             disabled={loading}
+            sx={{
+              textTransform: "none",
+              fontWeight: 600,
+            }}
           >
             Annuler
           </Button>
@@ -684,9 +1206,18 @@ function Profile() {
             sx={{
               background:
                 "linear-gradient(135deg, #0f766e, #059669)",
+              textTransform: "none",
+              fontWeight: 600,
+              borderRadius: 2,
+              "&:hover": {
+                background:
+                  "linear-gradient(135deg, #115e59, #047857)",
+              },
             }}
           >
-            Changer le mot de passe
+            {loading
+              ? "Modification..."
+              : "Changer le mot de passe"}
           </Button>
         </DialogActions>
       </Dialog>
